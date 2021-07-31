@@ -21,7 +21,7 @@ export const UserReducer = createReducer(               // az ngrx/store-bÃ³l jÃ
   })),
   on(loadSelectedItem, (state, action) => ({
     ...state,
-    selected: action.selected
+    selected: action.selected,
   })),
   on(loadUpdatedItem, (state, action) => ({
     ...state,
