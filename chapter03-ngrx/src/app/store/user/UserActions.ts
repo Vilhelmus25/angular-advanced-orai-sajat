@@ -10,8 +10,8 @@ export const UPDATE_ITEM = '[User] update item';
 export const LOAD_UPDATED_ITEM = '[User] load updated';
 export const ADD_ITEM = '[User] add item';
 export const LOAD_ADDED_ITEM = '[User] load added';
-export const DELETE_ITEM = '[User] delete item';
-export const REMOVE_ITEM = '[User] remove added';
+export const DELETE_ITEM = '[User] delete item';                      // elküldi a törlést a szervernek
+export const REMOVE_ITEM = '[User] remove added';                     // a store-ból távolítja el
 
 export const ERROR_ITEM = '[User] error item';
 export const FLUSH_ERROR = '[User] error flush';
@@ -65,5 +65,5 @@ export const errorItem = createAction(
   props<{ error: any }>()
 );
 
-export const errorFlush = createAction(FLUSH_ERROR);
+export const errorFlush = createAction(FLUSH_ERROR);        // ez kiüríti a store-ból a hibá(ka)t
 

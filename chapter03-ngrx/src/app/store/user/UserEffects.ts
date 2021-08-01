@@ -21,10 +21,10 @@ export class UserEffect {                                     // kapcsolatot ter
   getOneItem$ = createEffect((): Observable<Action> => {
     return this.actions$.pipe(
       ofType(getOneItem),
-      withLatestFrom(this.store$),
-      switchMap(([action, store]) => {
-        const cache = store.users?.items?.find(item => item.id === action.id);
-        return cache ? of(cache) : this.userService.get(action.id);
+      withLatestFrom(this.store$),                            // ez kiegészíti az adatot egy újabb objektummal, mindig egy újat csap hozzá ; ez az observable saját beépített fv-e
+      switchMap(([action, store]) => {                        // megvizsgálom, hogy benne van-e a store-ban; és hozzáfűzi az action-höz a store-t
+        const cache = store.users?.items?.find(item => item.id === action.id);        // a kérdőjelek azrét vannak, mert nem biztos, hogy szerepelnek
+        return cache ? of(cache) : this.userService.get(action.id);                     // ha van cache- akkor abból, ha nem akkor elindítom a http-kérést
       }),
       switchMap(user => of({ type: LOAD_SELECTED_ITEM, selected: user })),
       catchError(error => of({ type: ERROR_ITEM, error })),
@@ -41,14 +41,14 @@ export class UserEffect {                                     // kapcsolatot ter
   });
 
   addItem$ = createEffect((): Observable<Action> => {
-    let lastAcion = null;
+    let lastAcion = null;                               // elmentem majd az utolsó action-t
     return this.actions$.pipe(
       ofType(addItem),
-      tap(action => lastAcion = action),
-      mergeMap(action => this.userService.create(action.item).pipe(
-        switchMap(() => this.userService.query(`email=${lastAcion.item.email}`)),
+      tap(action => lastAcion = action),                // tepi, lementem az utsó actiont
+      mergeMap(action => this.userService.create(action.item).pipe(                         // itt kapom el a hibát a http kérésnél és ehhez nem switchmap, hanem mergemap kell, nem az actionben lesz a hiba, ezért nem fog az action leállni
+        switchMap(() => this.userService.query(`email=${lastAcion.item.email}`)),           // itt már így szerepel, mert a sima actionnel nem lehetne
         switchMap(user => of({ type: LOAD_ADDED_ITEM, item: user })),
-        catchError(error => of({ type: ERROR_ITEM, error })),
+        catchError(error => of({ type: ERROR_ITEM, error })),                           // ha ugyanaz a kulcs neve, mint a változóé, akkor elég egyet írni. (ES6)
       )),
     );
   });
@@ -59,7 +59,7 @@ export class UserEffect {                                     // kapcsolatot ter
       ofType(deleteItem),
       tap(action => lastAcion = action),
       switchMap(action => this.userService.delete(action.item)),
-      switchMap(user => of({ type: REMOVE_ITEM, item: lastAcion.item })),
+      switchMap(user => of({ type: REMOVE_ITEM, item: lastAcion.item })),     // a lastAction alapján tudja mit kell törölni
       catchError(error => of({ type: ERROR_ITEM, error })),
     );
   });
@@ -67,7 +67,7 @@ export class UserEffect {                                     // kapcsolatot ter
   constructor(
     private actions$: Actions,
     private userService: UserService,
-    private store$: Store<any>,
+    private store$: Store<any>,                       // kell egy store, hogy megnézzük benne vannak-e az adatok; Ez azért kell, hogy ne mindig a netről húzza le a kéréseket, hanem ami már szerepel a store-ban, akkor onnan szedjük le.
   ) { }
 
 }

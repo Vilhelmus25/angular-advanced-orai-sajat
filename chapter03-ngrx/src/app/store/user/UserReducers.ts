@@ -27,10 +27,10 @@ export const UserReducer = createReducer(               // az ngrx/store-ból j�
     ...state,
     items: ((users): User[] => {
       const i = users.items.findIndex((item: User) => item.id === action.item.id);
-      const newItems = [...users.items];
-      newItems[i] = action.item;
+      const newItems = [...users.items];          // szétspreadelem, mert a store immutable
+      newItems[i] = action.item;                  // az adott indexű legyen az action item
       return newItems;
-    })(state)
+    })(state)                            // IIFE
   })),
   on(loadAddedItem, (state, action) => ({
     ...state,
@@ -38,7 +38,7 @@ export const UserReducer = createReducer(               // az ngrx/store-ból j�
   })),
   on(removeDeletedItem, (state, action) => ({
     ...state,
-    items: (state.items as User[]).filter(item => item.id !== action.item.id)
+    items: (state.items as User[]).filter(item => item.id !== action.item.id)     // a megfelelő elem csak akkor maradjon benne, ha nem egyezik a keresett id-vel, vagyis aminek egyezik az id-je, az nem kerül bele a tömbbe, így törlök
   })),
   on(errorItem, (state, action) => ({                     // hiba esetén
     ...state,
@@ -46,11 +46,11 @@ export const UserReducer = createReducer(               // az ngrx/store-ból j�
   })),
   on(errorFlush, (state, action) => ({
     ...state,
-    error: null
+    error: null                                   // itt ürítjük a store-t
   })),
 );
 
 // selectors:
 export const selectItems = (state: State) => state.users.items;                       // elérhetővé teszi a Selector a komponensek számára az adatokat
-export const selectOneItem = (state: State) => Object.assign({}, state.users.selected);
+export const selectOneItem = (state: State) => Object.assign({}, state.users.selected);     // a store-ban lévő objektumok inmutable státuszban vannak, vagyis nem tudnmám szerkeszteni az adatokat, így viszont lemásolom és egy másolatát adom vissza
 export const selectError = (state: State) => state.users.error?.error;

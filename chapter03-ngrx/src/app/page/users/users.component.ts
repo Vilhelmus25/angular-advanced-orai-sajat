@@ -55,7 +55,7 @@ export class UsersComponent implements OnInit {
   }
 
   create(): void {
-    const user = new User();
+    const user = new User();              // ezeket megköveteli a JSON server, hogy ne dobja el hibával
     user.first_name = 'New';
     user.last_name = 'User';
     user.email = 'test@test.org';

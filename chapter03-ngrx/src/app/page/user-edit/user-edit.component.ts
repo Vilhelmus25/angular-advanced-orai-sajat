@@ -28,14 +28,14 @@ export class UserEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.userID = parseInt(this.ar.snapshot.params.id, 10);
-    this.store.dispatch( getOneItem({id: this.userID}) );
-    this.user$ = this.store.pipe( select(selectOneItem) );
+    this.store.dispatch(getOneItem({ id: this.userID }));           // ennek a hatására be fogja tölteni az adatokat a netről
+    this.user$ = this.store.pipe(select(selectOneItem));
   }
 
   onSubmit(ngForm: NgForm): void {
-    const user: User = ({...ngForm.value, id: this.userID});
-    this.store.dispatch( updateItem({item: user}) );
-    history.back();
+    const user: User = ({ ...ngForm.value, id: this.userID });      // ez az Object.assign() rövidített változata
+    this.store.dispatch(updateItem({ item: user }));
+    history.back();                     // visszalépek az előző oldalra
   }
 
 }
